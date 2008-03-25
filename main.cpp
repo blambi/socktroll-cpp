@@ -49,12 +49,21 @@ int main( int argc, int *argv )
         {
             if( FD_ISSET( net->get_fd(), &fdset ))
             {
-                cout << "got net data:";
-                cout << net->recv();
+                if( ( temp = net->recv() ) == string( "\0" ) )
+                {
+                    cerr << "Connection broken" << endl;
+                    exit( 1 );
+                }
+                
+                cout << "got: ";
+                cout << temp;
             }
             else /* stdin */
             {
-                cin >> temp;
+                getline( cin, temp );
+
+                /* hantera det */
+
                 net->send( temp );
             }
         }
