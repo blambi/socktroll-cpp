@@ -19,7 +19,7 @@ public:
     Network( std::string host, uint port );
     ~Network( void );
     int send( std::string msg );
-    //string* recv();
+    std::string recv();
 private:
     std::string host;
     uint port;
