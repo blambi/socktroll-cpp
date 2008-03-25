@@ -6,9 +6,6 @@
 
 /* C includes */
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 
 /*
   Network (tcp/client) socket
@@ -20,6 +17,7 @@ public:
     ~Network( void );
     int send( std::string msg );
     std::string recv();
+    int get_fd( void );
 private:
     std::string host;
     uint port;

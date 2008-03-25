@@ -1,6 +1,10 @@
 /*
   Tries to do the network magic part
 */
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h> /* for portability */
@@ -112,4 +116,9 @@ std::string Network::recv( void )
     }
 
     return std::string( buff );
+}
+
+int Network::get_fd( void )
+{
+    return socket_fd;
 }
