@@ -1,5 +1,6 @@
 /*
-  Tries to do the network magic part
+  Network layer:
+   Both Lowlevel and socktroll handling
 */
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -10,8 +11,6 @@
 #include <sys/types.h> /* for portability */
 #include <iostream>
 #include "socktroll.hpp"
-
-using namespace std;
 
 Network::Network( std::string host, uint port )
 {

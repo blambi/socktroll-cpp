@@ -13,14 +13,33 @@ using namespace std;
 
 int main( int argc, int *argv )
 {
-    Network* net = new Network( "127.0.0.1", 6000 );
+    Network* net;
     string temp;
-
+    
     int ret_val;
+    uint port;
     fd_set fdset;
     struct timeval tval;
 
     cout << "socktroll client written in C++" << endl;
+
+    if( argc != 3 and argc != 2 )
+    {
+        cerr << "usage: " << (char*)argv[0] << " host [port]" << endl;
+        cerr << "    default port = 6000" << endl;
+        return EXIT_FAILURE;
+    }
+    else
+        temp = string( (char*)argv[1] );
+
+    if( argc == 3 )
+        port = argv[2]; /* FIXME: This doesn't work... */
+    else
+        port = 6000;
+
+    cout << "Connecting to: " << temp << ":" << port << endl;
+
+    net = new Network( temp, port );
 
     cout << "net_fd: " << net->get_fd() << endl;
 
@@ -49,7 +68,7 @@ int main( int argc, int *argv )
         {
             if( FD_ISSET( net->get_fd(), &fdset ))
             {
-                if( ( temp = net->recv() ) == string( "\0" ) )
+                if( ( temp = net->recv() ).empty() )
                 {
                     cerr << "Connection broken" << endl;
                     exit( 1 );
