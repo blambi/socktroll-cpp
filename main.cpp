@@ -8,10 +8,11 @@
 
 #include <iostream>
 #include "socktroll.hpp"
+#include <cstdio>
 
 using namespace std;
 
-int main( int argc, int *argv )
+int main( int argc, char **argv )
 {
     Network* net;
     string temp;
@@ -32,8 +33,13 @@ int main( int argc, int *argv )
     else
         temp = string( (char*)argv[1] );
 
+    for( int x=0; x < argc; x++ )
+        printf( "%d: %s\n", x, argv[x] );
+
     if( argc == 3 )
-        port = argv[2]; /* FIXME: This doesn't work... */
+    {
+        port = atoi(argv[2]);
+    }
     else
         port = 6000;
 

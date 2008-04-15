@@ -17,6 +17,8 @@ Network::Network( std::string host, uint port )
     struct sockaddr_in socket_addr;
     int socket_addr_lookup;
 
+    struct hostent *hostinfo;
+
 #ifdef DEBUG
     printf( "Network: creating socket to ( host=%s, port=%d )\n",
             host.c_str(), port );
@@ -35,13 +37,38 @@ Network::Network( std::string host, uint port )
         exit( 1 );
     }
 
+ 
+    /* This will use the FIRST ip registered to an IP */
+    hostinfo = gethostbyname( host.c_str() );
+    if( hostinfo->h_addr_list[0] == NULL )
+    {
+        fprintf( stderr, "Couldn't lookup %s\n", host.c_str() );
+        exit( 1 );
+    }
+    else
+    {
+        host = std::string(
+            inet_ntoa( *(struct in_addr*)( hostinfo -> h_addr_list[0] ))
+            );
+    }
+
     /* set up address */
     memset( &socket_addr, 0, sizeof( socket_addr ) );
-    socket_addr.sin_family = AF_INET;
+    //socket_addr.sin_family = AF_INET;
+    socket_addr.sin_family = hostinfo->h_addrtype;
     socket_addr.sin_port = htons( port );
-    
-    socket_addr_lookup = inet_pton( AF_INET, host.c_str(),
+   
+#ifdef DEBUG
+    std::cout << "h_addr: '" << host << "'" << std::endl;
+#endif
+
+    /* We should now support IPv6 and IPv4 =) */
+    socket_addr_lookup = inet_pton( hostinfo->h_addrtype,
+                                    host.c_str(),
                                     &socket_addr.sin_addr );
+
+    //socket_addr_lookup = inet_pton( AF_INET, host.c_str(),
+    //                                &socket_addr.sin_addr );
 
     if( socket_addr_lookup == 0 )
     {
