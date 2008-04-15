@@ -125,6 +125,7 @@ std::string Network::recv( void )
     printf( "Network: recv\n" );
 #endif
     char buff[500];
+    std::string sbuff;
     int length;
     
     memset( &buff, 0, 500 );
@@ -137,7 +138,12 @@ std::string Network::recv( void )
         exit( 1 );
     }
 
-    return std::string( buff );
+    sbuff = std::string( buff );
+
+    if( sbuff[ sbuff.size() -1 ] == '\n' )
+        return sbuff.erase( sbuff.size() -1, 1 ); /* Remove \n */
+    else
+        return sbuff;
 }
 
 int Network::get_fd( void )
