@@ -1,10 +1,10 @@
 TARGET += socktroll
-SRCS += main.cpp network.cpp
+SRCS += main.cpp network.cpp ui.cpp
 CC := gcc
 CPP := g++
 LD := g++
 override CFLAGS += -Wall -pedantic -ggdb -std=c++98 -g #-DDEBUG
-LDFLAGS += -g
+LDFLAGS += -g -lncurses
 OBJS += $(SRCS:.cpp=.o)
 
 all:$(TARGET)

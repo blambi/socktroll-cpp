@@ -24,4 +24,12 @@ private:
     int socket_fd; /* not right maybe */
 };
 
+/*
+  ui
+*/
+void ui_init( void );
+void ui_stop( void );
+void ui_refresh( void );
+void ui_print( char *fmt, ... );
+
 #endif /* __SOCKTROLL_HPP */

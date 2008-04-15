@@ -5,7 +5,6 @@
 #include <sys/time.h> // for tval
 
 /* C++ stuff */
-
 #include <iostream>
 #include "socktroll.hpp"
 #include <cstdio>
@@ -43,57 +42,25 @@ int main( int argc, char **argv )
     else
         port = 6000;
 
-    cout << "Connecting to: " << temp << ":" << port << endl;
-
     net = new Network( temp, port );
+    
+    net->send( "nick kurt" ); /* FIXME: Should be from the UI */
+    
+    ui_init();
 
-    cout << "net_fd: " << net->get_fd() << endl;
-
-    net->send( "nick kurt" );
-
-    /* main loop */
-    while(1)
+    while(1) /* HACK: sort of a ncurses powered logger ;) */
     {
-        /* fdset setup */
-        FD_ZERO( &fdset );
-        FD_SET( 0, &fdset ); /* add stdin */
-        FD_SET( net->get_fd(), &fdset );
-        
-        /* tval setup */
-        tval.tv_usec = 0;
-        tval.tv_sec = 5;
-
-        /* main part of the loop */
-        ret_val = select( net->get_fd() +1, &fdset, NULL, NULL, &tval );
-        
-        if( ret_val == -1 )
+        if( ( temp = net->recv() ).empty() )
         {
-            cerr << "Error: select()" << endl;
+            ui_print( "! Connection broken" );
+            return EXIT_FAILURE;
         }
-        else if( ret_val )
-        {
-            if( FD_ISSET( net->get_fd(), &fdset ))
-            {
-                if( ( temp = net->recv() ).empty() )
-                {
-                    cerr << "Connection broken" << endl;
-                    return EXIT_FAILURE;
-                }
                 
-                cout << "got: ";
-                cout << temp;
-            }
-            else /* stdin */
-            {
-                getline( cin, temp );
-
-                /* hantera det */
-
-                net->send( temp );
-            }
-        }
-        
+        ui_print( "%s", temp.c_str() );
     }
+    
+
     delete net;
+    ui_stop();
     return EXIT_SUCCESS;
 }
