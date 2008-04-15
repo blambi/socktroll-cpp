@@ -34,7 +34,7 @@ Network::Network( std::string host, uint port )
     if( socket_fd == -1 )
     {
         fprintf( stderr, "Couldn't create socket!\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
 
  
@@ -43,7 +43,7 @@ Network::Network( std::string host, uint port )
     if( hostinfo->h_addr_list[0] == NULL )
     {
         fprintf( stderr, "Couldn't lookup %s\n", host.c_str() );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     else
     {
@@ -54,7 +54,6 @@ Network::Network( std::string host, uint port )
 
     /* set up address */
     memset( &socket_addr, 0, sizeof( socket_addr ) );
-    //socket_addr.sin_family = AF_INET;
     socket_addr.sin_family = hostinfo->h_addrtype;
     socket_addr.sin_port = htons( port );
    
@@ -67,18 +66,15 @@ Network::Network( std::string host, uint port )
                                     host.c_str(),
                                     &socket_addr.sin_addr );
 
-    //socket_addr_lookup = inet_pton( AF_INET, host.c_str(),
-    //                                &socket_addr.sin_addr );
-
     if( socket_addr_lookup == 0 )
     {
         fprintf( stderr, "Not a valid host address\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
     else if( socket_addr_lookup < 0 )
     {
         fprintf( stderr, "Not a supported address family\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
 
     /* connect */
@@ -86,7 +82,7 @@ Network::Network( std::string host, uint port )
                        sizeof( socket_addr ) ) )
     {
         fprintf( stderr, "Couldn't connect to host\n" );
-        exit( 1 );
+        exit( EXIT_FAILURE );
     }
 }
 

@@ -77,7 +77,7 @@ int main( int argc, char **argv )
                 if( ( temp = net->recv() ).empty() )
                 {
                     cerr << "Connection broken" << endl;
-                    exit( 1 );
+                    return EXIT_FAILURE;
                 }
                 
                 cout << "got: ";
