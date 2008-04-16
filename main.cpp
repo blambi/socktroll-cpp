@@ -56,7 +56,6 @@ int main( int argc, char **argv )
         net->send( ui->input() );
     }
     
-
     delete net;
     delete ui;
     return EXIT_SUCCESS;

@@ -8,6 +8,11 @@
 #include <sys/socket.h>
 #include <curses.h>
 
+/* Compiler fix for some system */
+#ifndef EXIT_SUCCESS
+#include <stdlib.h>
+#endif
+
 void fatal_error( std::string msg );
 
 /*
