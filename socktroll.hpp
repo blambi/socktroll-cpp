@@ -6,6 +6,9 @@
 
 /* C includes */
 #include <sys/socket.h>
+#include <curses.h>
+
+void fatal_error( std::string msg );
 
 /*
   Network (tcp/client) socket
@@ -27,10 +30,18 @@ private:
 /*
   ui
 */
-void ui_init( void );
-void ui_stop( void );
-void ui_refresh( void );
-void ui_print( char *fmt, ... );
-std::string ui_input( void );
+class UI
+{
+public:
+    UI( void );
+    ~UI( void );
+    void print( char *fmt, ... );
+    std::string input( void );
+private:
+    void refresh( void );
+
+    WINDOW *logwin;   /* "paper trail" */
+    WINDOW *inputwin; /* cmd line */
+};
 
 #endif /* __SOCKTROLL_HPP */

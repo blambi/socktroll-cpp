@@ -11,9 +11,12 @@
 
 using namespace std;
 
+/* Semi global */
+Network* net;
+UI* ui;
+
 int main( int argc, char **argv )
 {
-    Network* net;
     string temp;
     uint port;
 
@@ -42,22 +45,33 @@ int main( int argc, char **argv )
     
     net->send( "nick kurt" ); /* FIXME: Should be from the UI */
     
-    ui_init();
+    ui = new UI();
 
     while(1) /* HACK: sort of a ncurses powered logger ;) */
     {
         if( ( temp = net->recv() ).empty() )
-        {
-            ui_print( "! Connection broken" );
-            return EXIT_FAILURE;
-        }
+            fatal_error( "Lost connection" );
                 
-        ui_print( "%s", temp.c_str() );
-        net->send( ui_input() );
+        ui->print( "%s", temp.c_str() );
+        net->send( ui->input() );
     }
     
 
     delete net;
-    ui_stop();
+    delete ui;
     return EXIT_SUCCESS;
+}
+
+void fatal_error( std::string msg )
+{
+    /* Usage: when all goes wrong we wish to die nicely */
+    if( net )
+        delete net;
+    
+    if( ui )
+        delete ui;
+
+    cout << "Error: " << msg << endl;
+
+    exit( EXIT_FAILURE );
 }
