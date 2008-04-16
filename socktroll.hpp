@@ -49,4 +49,23 @@ private:
     WINDOW *inputwin; /* cmd line */
 };
 
+extern Network* net;
+extern UI* ui;
+
+/*
+  Protocol handler
+*/
+class Protocol
+{
+public:
+    Protocol( void );
+    ~Protocol( void );
+    void parse( std::string message ); /* do stuff with something we recived */
+    void msg( std::string message ); /* text message */
+    void cmd( std::string command ); /* command */
+private:
+    std::string nick;
+    bool authed;
+};
+
 #endif /* __SOCKTROLL_HPP */

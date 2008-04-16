@@ -1,5 +1,5 @@
 TARGET += socktroll
-SRCS += main.cpp network.cpp ui.cpp
+SRCS += main.cpp network.cpp ui.cpp protocol.cpp
 CC := gcc
 CPP := g++
 LD := g++

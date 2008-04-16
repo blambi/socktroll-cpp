@@ -11,9 +11,11 @@
 
 using namespace std;
 
-/* Semi global */
+/* global */
 Network* net;
+Protocol* protocol;
 UI* ui;
+
 void SIGIO_handler( int signal );
 
 int main( int argc, char **argv )
@@ -55,12 +57,15 @@ int main( int argc, char **argv )
     //signal( SIGIO, SIGIO_handler );
 
     ui = new UI();
+    protocol = new Protocol();
     net = new Network( temp, port );
 
-    //net->send( "nick kurt" ); /* FIXME: Should be done from the UI */
-
     /* Get header */
-    
+    temp = net->getmsg();
+    if( ! temp.empty() )
+        protocol->parse( temp );
+    else
+        fatal_error( "Didn't receive a head" );
 
     /* UI input loop */
     while(1)
@@ -69,11 +74,10 @@ int main( int argc, char **argv )
         
         if( ! temp.empty() )
         {
-            ui->print( "1 '%s'", temp.c_str() );
-
-            net->send( temp ); /* FIXME: Read chars and tell
-                                * program that its done when it
-                                * really is */
+            if( temp[0] != '/' )
+                protocol->msg( temp );
+            else
+                protocol->cmd( temp );
         }
     }
     
@@ -106,6 +110,6 @@ void SIGIO_handler( int signal )
     {
         temp = net->getmsg();
         if( ! temp.empty() and temp != "\n" ) /* Not sure why we get them */
-            ui->print( "3 '%s'", temp.c_str() );
+            protocol->parse( temp );
     }
 }
