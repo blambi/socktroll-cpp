@@ -15,11 +15,7 @@ int main( int argc, char **argv )
 {
     Network* net;
     string temp;
-    
-    int ret_val;
     uint port;
-    fd_set fdset;
-    struct timeval tval;
 
     cout << "socktroll client written in C++" << endl;
 
@@ -57,6 +53,7 @@ int main( int argc, char **argv )
         }
                 
         ui_print( "%s", temp.c_str() );
+        net->send( ui_input() );
     }
     
 

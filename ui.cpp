@@ -3,6 +3,7 @@
 
 /* C++ */
 #include <cstdio>
+#include <string>
 #include "socktroll.hpp"
 
 
@@ -43,4 +44,26 @@ void ui_print( char *fmt, ... )
     va_end( ap );
     wprintw( logwin, "\n" );
     ui_refresh();
+}
+
+std::string ui_input( void )
+{
+    /*
+      FIXME: Not sure that this is how we should handle input
+             Maybe a mvwgetch is better
+    */
+    int x; //, buf;
+    char buf[500];
+
+    mvwgetnstr( inputwin, 1, 0, buf, 500 );
+
+    //buf = wgetch( inputwin ); /* FIXME: local echo and internal buffer */
+
+    //if( buf == '\n' )
+    for( x = 0; x <= 81; x++ )
+        mvwprintw( inputwin, 1, x, " " );
+
+    ui_refresh();
+    
+    return std::string( buf );
 }
