@@ -67,6 +67,9 @@ int main( int argc, char **argv )
     else
         fatal_error( "Didn't receive a head" );
 
+    /* auth */
+    protocol->auth();
+
     /* UI input loop */
     while(1)
     {

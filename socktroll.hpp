@@ -63,9 +63,10 @@ public:
     void parse( std::string message ); /* do stuff with something we recived */
     void msg( std::string message ); /* text message */
     void cmd( std::string command ); /* command */
+    void auth( void ); /* auth input */
 private:
     std::string nick;
-    bool authed;
+    bool auth_ok;
 };
 
 #endif /* __SOCKTROLL_HPP */
