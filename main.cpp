@@ -81,6 +81,7 @@ int main( int argc, char **argv )
         }
     }
     
+    delete protocol;
     delete net;
     delete ui;
     return EXIT_SUCCESS;
