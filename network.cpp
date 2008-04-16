@@ -36,19 +36,12 @@ Network::Network( std::string host, uint port )
     socket_fd = socket( PF_INET, SOCK_STREAM, 0 );
     
     if( socket_fd == -1 )
-    {
-        fprintf( stderr, "Couldn't create socket!\n" );
-        exit( EXIT_FAILURE );
-    }
-
+        fatal_error( "Couldn't create socket!" );
  
     /* This will use the FIRST ip registered to a hostname */
     hostinfo = gethostbyname( host.c_str() );
     if( hostinfo->h_addr_list[0] == NULL )
-    {
-        fprintf( stderr, "Couldn't lookup %s\n", host.c_str() );
-        exit( EXIT_FAILURE );
-    }
+        fatal_error( std::string( "Couldn't lookup " ) + host );
     else
     {
         host = std::string(
@@ -71,31 +64,22 @@ Network::Network( std::string host, uint port )
                                     &socket_addr.sin_addr );
 
     if( socket_addr_lookup == 0 )
-    {
-        fprintf( stderr, "Not a valid host address\n" );
-        exit( EXIT_FAILURE );
-    }
+        fatal_error( "Not a valid host address" );
     else if( socket_addr_lookup < 0 )
-    {
-        fprintf( stderr, "Not a supported address family\n" );
-        exit( EXIT_FAILURE );
-    }
+        fatal_error( "Not a supported address family" );
 
     /* set ownership to us so we can change it */
     if( fcntl( socket_fd, F_SETOWN, getpid() ) < 0 )
         fatal_error( "Unable to claim ownership of process" );
 
-    /* socket should be non-blocking */
-    if( fcntl( socket_fd, F_SETFL, O_NONBLOCK | FASYNC ) < 0 )
-        fatal_error( "Unable to put socket into Nonblocking/Async mode" );
-
     /* connect */
     if( -1 == connect( socket_fd, (struct sockaddr*) &socket_addr,
                        sizeof( socket_addr ) ) )
-    {
-        fprintf( stderr, "Couldn't connect to host\n" );
-        exit( EXIT_FAILURE );
-    }
+        fatal_error( "Couldn't connect to host" );
+
+    /* socket should be non-blocking */
+    if( fcntl( socket_fd, F_SETFL, O_NONBLOCK | FASYNC ) < 0 )
+        fatal_error( "Unable to put socket into Nonblocking/Async mode" );
 }
 
 Network::~Network( void )
