@@ -62,9 +62,12 @@ int main( int argc, char **argv )
     /* UI input loop */
     while(1)
     {
-        net->send( ui->input() ); /* FIXME: Read chars and tell
-                                   * program that its done when it
-                                   * really is */
+        temp = ui->input();
+        ui->print( "%s", temp.c_str() );
+
+        /*net->send( temp ); /* FIXME: Read chars and tell
+                            * program that its done when it
+                            * really is */
     }
     
     delete net;
@@ -90,14 +93,11 @@ void SIGIO_handler( int signal )
 {
     string temp;
 
-    ui->print( "in handler" );
-
     /* Handle data */
     if( net != NULL )
-        if( ( temp = net->getmsg() ).empty() )
-            fatal_error( "Lost connection" );
-
-    ui->print( "post read" );
-
-    ui->print( "%s", temp.c_str() );
+    {
+        temp = net->getmsg();
+        if( ! temp.empty() )
+            ui->print( "%s", temp.c_str() );
+    }
 }
