@@ -38,6 +38,13 @@ void Protocol::parse( std::string message )
         ui->print( " * %s %s", temp.c_str(),
                    message.substr( 8 + temp.size() ).c_str() );
     }
+    else if( message.substr( 0, 6 ) == "rename" )
+    {  /* someone selected a new nick */
+        temp = message.substr( 7 );
+        temp = temp.substr( 0, temp.find( " " ));
+        ui->print( "(i) %s -> %s", temp.c_str(),
+                   message.substr( 8 + temp.size() ).c_str() );
+    }
     else
         ui->print( "UNKOWN: '%s'", message.c_str() );
 }
