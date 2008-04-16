@@ -8,9 +8,9 @@
 #include <sys/socket.h>
 #include <curses.h>
 
-/* Compiler fix for some system */
+/* Compiler fix for some systems */
 #ifndef EXIT_SUCCESS
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 void fatal_error( std::string msg );
@@ -24,7 +24,7 @@ public:
     Network( std::string host, uint port );
     ~Network( void );
     int send( std::string msg );
-    std::string recv();
+    std::string getmsg();
     int get_fd( void );
 private:
     std::string host;

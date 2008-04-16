@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/time.h> // for tval
+#include <signal.h>
 
 /* C++ stuff */
 #include <iostream>
@@ -14,11 +14,13 @@ using namespace std;
 /* Semi global */
 Network* net;
 UI* ui;
+void SIGIO_handler( int signal );
 
 int main( int argc, char **argv )
 {
     string temp;
     uint port;
+    struct sigaction sig_handler;
 
     cout << "socktroll client written in C++" << endl;
 
@@ -40,20 +42,29 @@ int main( int argc, char **argv )
     }
     else
         port = 6000;
+       
+    /* bind up the signal handler */
+    sig_handler.sa_handler = SIGIO_handler;
+    if( sigfillset( &sig_handler.sa_mask ) < 0 )
+        fatal_error( "Unable to initialize signal set" );
+    /* SIGIO should call this handler */
+    sig_handler.sa_flags = 0;
+    if( sigaction( SIGIO, &sig_handler, 0 ) < 0 )
+        fatal_error( "Unable to bind SIGIO to sig_handler" );
 
-    net = new Network( temp, port );
-    
-    net->send( "nick kurt" ); /* FIXME: Should be from the UI */
-    
+    //signal( SIGIO, SIGIO_handler );
+
     ui = new UI();
+    net = new Network( temp, port );
 
-    while(1) /* HACK: sort of a ncurses powered logger ;) */
+    net->send( "nick kurt" ); /* FIXME: Should be done from the UI */
+
+    /* UI input loop */
+    while(1)
     {
-        if( ( temp = net->recv() ).empty() )
-            fatal_error( "Lost connection" );
-                
-        ui->print( "%s", temp.c_str() );
-        net->send( ui->input() );
+        net->send( ui->input() ); /* FIXME: Read chars and tell
+                                   * program that its done when it
+                                   * really is */
     }
     
     delete net;
@@ -73,4 +84,20 @@ void fatal_error( std::string msg )
     cout << "Error: " << msg << endl;
 
     exit( EXIT_FAILURE );
+}
+
+void SIGIO_handler( int signal )
+{
+    string temp;
+
+    ui->print( "in handler" );
+
+    /* Handle data */
+    if( net != NULL )
+        if( ( temp = net->getmsg() ).empty() )
+            fatal_error( "Lost connection" );
+
+    ui->print( "post read" );
+
+    ui->print( "%s", temp.c_str() );
 }

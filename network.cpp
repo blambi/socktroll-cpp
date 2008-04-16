@@ -5,10 +5,14 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/file.h>  /* FASYNC and O_NONBLOCK */
+#include <fcntl.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h> /* for portability */
+#include <unistd.h>    /* getpid etc */
+#include <errno.h>
 #include <iostream>
 #include "socktroll.hpp"
 
@@ -38,7 +42,7 @@ Network::Network( std::string host, uint port )
     }
 
  
-    /* This will use the FIRST ip registered to an IP */
+    /* This will use the FIRST ip registered to a hostname */
     hostinfo = gethostbyname( host.c_str() );
     if( hostinfo->h_addr_list[0] == NULL )
     {
@@ -76,6 +80,14 @@ Network::Network( std::string host, uint port )
         fprintf( stderr, "Not a supported address family\n" );
         exit( EXIT_FAILURE );
     }
+
+    /* set ownership to us so we can change it */
+    if( fcntl( socket_fd, F_SETOWN, getpid() ) < 0 )
+        fatal_error( "Unable to claim ownership of process" );
+
+    /* socket should be non-blocking */
+    if( fcntl( socket_fd, F_SETFL, O_NONBLOCK | FASYNC ) < 0 )
+        fatal_error( "Unable to put socket into Nonblocking/Async mode" );
 
     /* connect */
     if( -1 == connect( socket_fd, (struct sockaddr*) &socket_addr,
@@ -118,7 +130,7 @@ int Network::send( std::string msg )
     return 0;
 }
 
-std::string Network::recv( void )
+std::string Network::getmsg( void )
 {
     /* FIXME: Somehow we are going to make this allright! */
 #ifdef DEBUG
@@ -130,13 +142,14 @@ std::string Network::recv( void )
     
     memset( &buff, 0, 500 );
 
-    length = read( socket_fd, &buff, sizeof(buff));
-
-    if( -1 == length )
+    /* get stuff */
+    if( ( length = recv( socket_fd, buff, 500, 0 ) ) < 0 )
     {
-        fprintf( stderr, "Error reading data!\n" );
-        exit( 1 );
+        if( errno != EWOULDBLOCK )
+            fatal_error( "recv() failed" );
     }
+
+    /* post */
 
     sbuff = std::string( buff );
 
