@@ -20,15 +20,24 @@ void Protocol::parse( std::string message )
 
     /* FIXME: not that pretty but it works */
     if( message.substr( 0, 3 ) == "msg" )
-    {
+    {  /* normal message */
         temp = message.substr( 4 );
         temp = temp.substr( 0, temp.find( " " ));
             ui->print( "<%s> %s", temp.c_str(),
                        message.substr( 5 + temp.size() ).c_str() );
     }
     else if( message.substr( 0, 1 ) == "+" or message.substr( 0, 1 ) == "-" )
+    { /* join / part */
         ui->print( " %s %s", message.substr( 0, 1 ).c_str(),
                    message.substr( 2 ).c_str() );
+    }
+    else if( message.substr( 0, 6 ) == "action" )
+    {  /* "/me" */
+        temp = message.substr( 7 );
+        temp = temp.substr( 0, temp.find( " " ));
+        ui->print( " * %s %s", temp.c_str(),
+                   message.substr( 8 + temp.size() ).c_str() );
+    }
     else
         ui->print( "UNKOWN: '%s'", message.c_str() );
 }
