@@ -57,17 +57,24 @@ int main( int argc, char **argv )
     ui = new UI();
     net = new Network( temp, port );
 
-    net->send( "nick kurt" ); /* FIXME: Should be done from the UI */
+    //net->send( "nick kurt" ); /* FIXME: Should be done from the UI */
+
+    /* Get header */
+    
 
     /* UI input loop */
     while(1)
     {
         temp = ui->input();
-        ui->print( "%s", temp.c_str() );
+        
+        if( ! temp.empty() )
+        {
+            ui->print( "1 '%s'", temp.c_str() );
 
-        /*net->send( temp ); /* FIXME: Read chars and tell
-                            * program that its done when it
-                            * really is */
+            net->send( temp ); /* FIXME: Read chars and tell
+                                * program that its done when it
+                                * really is */
+        }
     }
     
     delete net;
@@ -84,7 +91,8 @@ void fatal_error( std::string msg )
     if( ui )
         delete ui;
 
-    cout << "Error: " << msg << endl;
+    cout << endl;
+    cerr << "Error: " << msg << endl;
 
     exit( EXIT_FAILURE );
 }
@@ -97,7 +105,7 @@ void SIGIO_handler( int signal )
     if( net != NULL )
     {
         temp = net->getmsg();
-        if( ! temp.empty() )
-            ui->print( "%s", temp.c_str() );
+        if( ! temp.empty() and temp != "\n" ) /* Not sure why we get them */
+            ui->print( "3 '%s'", temp.c_str() );
     }
 }
