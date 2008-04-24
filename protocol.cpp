@@ -27,6 +27,19 @@ void Protocol::parse( std::string message )
         ui->print( "<%s> %s", temp.c_str(),
                    message.substr( 5 + temp.size() ).c_str() );
     }
+    else if( message.substr( 0, 2 ) == "no" )
+    { /* Nick change refusals */
+        msg_ok = true;
+
+        /* diffrent reasons */
+        if( message.substr( 3 ) == "taken" )
+            ui->print( " ! The nick is already in use" );
+        else if( message.substr( 3 ) == "bad" )
+            ui->print( " ! Not a valid nick" );
+        else
+            ui->print( " ! Unknown reason %s",
+                       message.substr( 3 ).c_str() );
+    }
 
     if( ! auth_ok )
     {
@@ -37,19 +50,9 @@ void Protocol::parse( std::string message )
                selected nick?
             */
             ui->print( " + %s", message.substr( 3 ).c_str() );
+            nick = message.substr( 3 );
             auth_ok = true;
             msg_ok = true;
-        }
-        if( message.substr( 0, 2 ) == "no" )
-        {
-            /* diffrent reasons */
-            if( message.substr( 3 ) == "taken" )
-                ui->print( " ! The nick is already in use" );
-            else if( message.substr( 3 ) == "bad" )
-                ui->print( " ! Not a valid nick" );
-            else
-                ui->print( " ! Unknown reason %s",
-                           message.substr( 3 ).c_str() );
         }
         else if( message == "illegal command" )
             ui->print( " ! You must set a nick first" );
@@ -57,10 +60,6 @@ void Protocol::parse( std::string message )
         {
             ui->print( "UNKNOWN: '%s'", message.c_str() );
         }
-
-        //if( ! auth_ok ) /* Continue with login attempts */
-        //    this->auth();
-        
     }
     else
     {
@@ -81,8 +80,8 @@ void Protocol::parse( std::string message )
         {  /* someone selected a new nick */
             temp = message.substr( 7 );
             temp = temp.substr( 0, temp.find( " " ));
-            ui->print( " i %s -> %s", temp.c_str(),
-                       message.substr( 8 + temp.size() ).c_str() );
+            nick = message.substr( 8 + temp.size() );
+            ui->print( " i %s -> %s", temp.c_str(), nick.c_str() );
         }
         else if( message == "illegal command" )
         {
@@ -95,22 +94,62 @@ void Protocol::parse( std::string message )
 
 void Protocol::msg( std::string message )
 {
-    net->send( std::string( "msg " ) + message );
+    if( auth_ok )
+        net->send( std::string( "msg " ) + message );
+    else
+        ui->print( "You must first auth with /nick" );
 }
 
 void Protocol::cmd( std::string command )
 {
-    /* FIXME: make me do something! */
-    net->send( command.erase( 0, 1 ) );
+    bool cmd_done;
+    
+    /* Always valid */
+    if( command.substr( 0, 4 ) == "nick" )
+    {
+        net->send( "nick " + command.substr( 5 ) );
+        cmd_done = true;
+    }
+
+    /* Must auth first */
+    if( auth_ok )
+    {
+        if( command.substr( 0, 2 ) == "me" )
+        {
+            net->send( "action " + command.substr( 3 ) );
+            cmd_done = true;
+        }
+        else if( command.substr( 0, 6 ) == "action" )
+        {
+            net->send( "action " + command.substr( 7 ) );
+            cmd_done = true;
+        }
+        else if( command.substr( 0, 5 ) == "names" )
+        {
+            net->send( "names" );
+            cmd_done = true;
+        }
+    }
+    
+    if( ! cmd_done )
+    {
+        /* Should only be unknowns here */
+        if( auth_ok )
+            ui->print( "*** Unknown command" );
+        else
+            ui->print( "*** Not available" );
+    }
 }
 
 void Protocol::auth( void )
 {
+    std::string t_nick;
+
     if( ! auth_ok )
     {
-        ui->print( "Select your nick:" );
-        while( nick == "" )
-            nick = ui->input();
-        this->cmd( std::string( "/nick " ) + nick );
+        ui->print( "*** Select your nick:" );
+        while( t_nick == "" )
+            t_nick = ui->input();
+        this->cmd( std::string( "nick " ) + t_nick );
     } /* else its just a ghost call */
 }
