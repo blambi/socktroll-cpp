@@ -4,9 +4,13 @@
 /* C++ includes */
 #include <string>
 
+#include <cwchar>
+#include <locale>
+#include <glibmm-2.4/glibmm.h>
 /* C includes */
 #include <sys/socket.h>
-#include <curses.h>
+#include <wctype.h> 
+#include <ncursesw/ncurses.h>
 
 /* Compiler fix for some systems */
 #ifndef EXIT_SUCCESS
@@ -41,7 +45,7 @@ public:
     UI( void );
     ~UI( void );
     void print( char *fmt, ... );
-    std::string input( void );
+    Glib::ustring input( void );
 private:
     void refresh( void );
 
@@ -60,7 +64,8 @@ class Protocol
 public:
     Protocol( void );
     ~Protocol( void );
-    void parse( std::string message ); /* do stuff with something we recived */
+    /* do stuff with something we recived */
+    void parse( std::string message );
     void msg( std::string message ); /* text message */
     void cmd( std::string command ); /* command */
     void auth( void ); /* auth input */

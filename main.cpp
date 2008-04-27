@@ -6,8 +6,8 @@
 
 /* C++ stuff */
 #include <iostream>
-#include "socktroll.hpp"
 #include <cstdio>
+#include "socktroll.hpp"
 
 using namespace std;
 
@@ -21,6 +21,7 @@ void SIGIO_handler( int signal );
 int main( int argc, char **argv )
 {
     string temp;
+    Glib::ustring input;
     uint port;
     struct sigaction sig_handler;
 
@@ -60,6 +61,7 @@ int main( int argc, char **argv )
     protocol = new Protocol();
     net = new Network( temp, port );
 
+
     /* Get header */
     temp = net->getmsg();
     if( ! temp.empty() )
@@ -73,14 +75,15 @@ int main( int argc, char **argv )
     /* UI input loop */
     while(1)
     {
-        temp = ui->input();
+        input = ui->input();
         
-        if( ! temp.empty() )
+        //ui->print( "-x-'%ls'-x-", input.c_str() );
+        if( ! input.empty() )
         {
-            if( temp[0] != '/' )
-                protocol->msg( temp );
+            if( input[0] != '/' )
+                protocol->msg( input );
             else
-                protocol->cmd( temp );
+                protocol->cmd( input.substr( 1 ) );
         }
     }
     

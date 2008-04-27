@@ -6,6 +6,7 @@
 
 UI::UI( void )
 {
+    setlocale( LC_CTYPE, "" ); /* WHY!!! */
     initscr();
     logwin = newwin( 22, 80, 0, 0 );
     inputwin = newwin( 2, 80, 22, 0 );
@@ -39,24 +40,25 @@ void UI::print( char *fmt, ... )
     this->refresh();
 }
 
-std::string UI::input( void )
+Glib::ustring UI::input( void )
 {
-    /*
-      FIXME: Not sure that this is how we should handle input
-             Maybe a mvwgetch is better
-    */
-    int x; //, buf;
-    char buf[500];
+    int x;
+    gunichar raw_buf[500]; /* wint_t is the same as gunichar */
+    Glib::ustring buf;    
 
-    mvwgetnstr( inputwin, 1, 0, buf, 500 );
+    mvwgetn_wstr( inputwin, 1, 0, raw_buf, 500 );
 
-    //buf = wgetch( inputwin ); /* FIXME: local echo and internal buffer */
-
-    //if( buf == '\n' )
     for( x = 0; x <= 81; x++ )
         mvwprintw( inputwin, 1, x, " " );
 
     this->refresh();
-    
-    return std::string( buf );
+
+    for( x = 0; x < 500; x++ )
+    {
+        if( raw_buf[x] == NULL )
+            break;
+        buf.append( 1, raw_buf[x] );
+    }
+
+    return buf;
 }
