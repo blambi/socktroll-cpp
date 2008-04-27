@@ -1,6 +1,5 @@
 /* C++ */
 #include <cstdio>
-#include <string>
 #include "socktroll.hpp"
 
 
@@ -29,14 +28,9 @@ void UI::refresh( void )
     wrefresh( inputwin );
 }
 
-void UI::print( char *fmt, ... )
+void UI::print( Glib::ustring line )
 {
-    va_list ap;
-    
-    va_start( ap, fmt );
-    vwprintw( logwin, fmt, ap );
-    va_end( ap );
-    wprintw( logwin, "\n" );
+    wprintw( logwin, "%s\n", line.c_str() );
     this->refresh();
 }
 

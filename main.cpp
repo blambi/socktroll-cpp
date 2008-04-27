@@ -93,7 +93,7 @@ int main( int argc, char **argv )
     return EXIT_SUCCESS;
 }
 
-void fatal_error( std::string msg )
+void fatal_error( Glib::ustring msg )
 {
     /* Usage: when all goes wrong we wish to die nicely */
     if( net )
@@ -110,7 +110,7 @@ void fatal_error( std::string msg )
 
 void SIGIO_handler( int signal )
 {
-    string temp;
+    Glib::ustring temp;
 
     /* Handle data */
     if( net != NULL )

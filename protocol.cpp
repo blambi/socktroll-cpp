@@ -24,8 +24,7 @@ void Protocol::parse( std::string message )
         msg_ok = true; /* to not get UNKNOWN messages */
         temp = message.substr( 4 );
         temp = temp.substr( 0, temp.find( " " ));
-        ui->print( "<%s> %s", temp.c_str(),
-                   message.substr( 5 + temp.size() ).c_str() );
+        ui->print( "<" + temp + "> " + message.substr( 5 + temp.size() ) );
     }
     else if( message.substr( 0, 2 ) == "no" )
     { /* Nick change refusals */
@@ -37,8 +36,7 @@ void Protocol::parse( std::string message )
         else if( message.substr( 3 ) == "bad" )
             ui->print( " ! Not a valid nick" );
         else
-            ui->print( " ! Unknown reason %s",
-                       message.substr( 3 ).c_str() );
+            ui->print( " ! Unknown reason " + message.substr( 3 ) );
     }
 
     if( ! auth_ok )
@@ -49,7 +47,7 @@ void Protocol::parse( std::string message )
                Maybe we should add a check if we really got our
                selected nick?
             */
-            ui->print( " + %s", message.substr( 3 ).c_str() );
+            ui->print( " + " + message.substr( 3 ) );
             nick = message.substr( 3 );
             auth_ok = true;
             msg_ok = true;
@@ -58,37 +56,36 @@ void Protocol::parse( std::string message )
             ui->print( " ! You must set a nick first" );
         else if( ! msg_ok )
         {
-            ui->print( "UNKNOWN: '%s'", message.c_str() );
+            ui->print( "UNKNOWN: '" + message + "'" );
         }
     }
     else
     {
         if( message.substr( 0, 1 ) == "+" or
                  message.substr( 0, 1 ) == "-" )
-        { /* join / part */
-            ui->print( " %s %s", message.substr( 0, 1 ).c_str(),
-                       message.substr( 2 ).c_str() );
+        { /* join / part ex: + foo */
+            ui->print( " " + message.substr( 0, 1 ) + message.substr( 2 ) );
         }
         else if( message.substr( 0, 6 ) == "action" )
         {  /* "/me" */
             temp = message.substr( 7 );
             temp = temp.substr( 0, temp.find( " " ));
-            ui->print( " * %s %s", temp.c_str(),
-                       message.substr( 8 + temp.size() ).c_str() );
+            ui->print( " * " + temp + " " +
+                       message.substr( 8 + temp.size() ) );
         }
         else if( message.substr( 0, 6 ) == "rename" )
         {  /* someone selected a new nick */
             temp = message.substr( 7 );
             temp = temp.substr( 0, temp.find( " " ));
             nick = message.substr( 8 + temp.size() );
-            ui->print( " i %s -> %s", temp.c_str(), nick.c_str() );
+            ui->print( " i " + temp + " -> " + nick );
         }
         else if( message == "illegal command" )
         {
             ui->print( " ! illegal command" );
         }
         else if( ! msg_ok )
-            ui->print( "UNKOWN: '%s'", message.c_str() );
+            ui->print( "UNKOWN: '" + message + "'" );
     }
 }
 

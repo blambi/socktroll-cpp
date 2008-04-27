@@ -7,6 +7,7 @@
 #include <cwchar>
 #include <locale>
 #include <glibmm-2.4/glibmm.h>
+
 /* C includes */
 #include <sys/socket.h>
 #include <wctype.h> 
@@ -17,7 +18,7 @@
 #include <cstdlib>
 #endif
 
-void fatal_error( std::string msg );
+void fatal_error( Glib::ustring msg );
 
 /*
   Network (tcp/client) socket
@@ -44,7 +45,7 @@ class UI
 public:
     UI( void );
     ~UI( void );
-    void print( char *fmt, ... );
+    void print( Glib::ustring line );
     Glib::ustring input( void );
 private:
     void refresh( void );
