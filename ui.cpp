@@ -40,7 +40,11 @@ Glib::ustring UI::input( void )
     gunichar raw_buf[500]; /* wint_t is the same as gunichar */
     Glib::ustring buf;    
 
-    mvwgetn_wstr( inputwin, 1, 0, raw_buf, 500 );
+    if( mvwgetn_wstr( inputwin, 1, 0, raw_buf, 500 ) != OK )
+    {
+        this->print( " [E] oh no input error" );
+        return Glib::ustring("");
+    }
 
     for( x = 0; x <= 81; x++ )
         mvwprintw( inputwin, 1, x, " " );

@@ -28,8 +28,8 @@ class Network
 public:
     Network( std::string host, uint port );
     ~Network( void );
-    int send( std::string msg );
-    std::string getmsg();
+    int send( Glib::ustring msg );
+    Glib::ustring getmsg();
     int get_fd( void );
 private:
     std::string host;

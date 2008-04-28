@@ -91,7 +91,7 @@ Network::~Network( void )
     close( socket_fd );
 }
 
-int Network::send( std::string msg )
+int Network::send( Glib::ustring msg )
 {
     /* 
        Not the most pretty function to send messeges to the server but
@@ -101,10 +101,10 @@ int Network::send( std::string msg )
     printf( "Network: sending '%s'\n", msg.c_str() );
 #endif
 
-    std::string buff;
+    Glib::ustring buff;
 
     buff = msg;
-    buff.append( "\n" );        
+    buff.append( "\n" );
 
     if( -1 == write( socket_fd, buff.c_str(), buff.size()))
     {
@@ -114,14 +114,14 @@ int Network::send( std::string msg )
     return 0;
 }
 
-std::string Network::getmsg( void )
+Glib::ustring Network::getmsg( void )
 {
     /* FIXME: Somehow we are going to make this allright! */
 #ifdef DEBUG
     printf( "Network: recv\n" );
 #endif
     char buff[500];
-    std::string sbuff;
+    Glib::ustring sbuff;
     int length;
     
     memset( &buff, 0, 500 );
@@ -135,7 +135,7 @@ std::string Network::getmsg( void )
 
     /* post */
 
-    sbuff = std::string( buff );
+    sbuff = Glib::ustring( buff );
 
     if( sbuff[ sbuff.size() -1 ] == '\n' )
         return sbuff.erase( sbuff.size() -1, 1 ); /* Remove \n */

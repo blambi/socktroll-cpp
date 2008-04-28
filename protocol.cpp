@@ -64,7 +64,8 @@ void Protocol::parse( std::string message )
         if( message.substr( 0, 1 ) == "+" or
                  message.substr( 0, 1 ) == "-" )
         { /* join / part ex: + foo */
-            ui->print( " " + message.substr( 0, 1 ) + message.substr( 2 ) );
+            ui->print( " " + message.substr( 0, 1 ) + " " +
+                       message.substr( 2 ) );
         }
         else if( message.substr( 0, 6 ) == "action" )
         {  /* "/me" */
