@@ -76,10 +76,6 @@ Network::Network( std::string host, uint port )
     if( -1 == connect( socket_fd, (struct sockaddr*) &socket_addr,
                        sizeof( socket_addr ) ) )
         fatal_error( "Couldn't connect to host" );
-
-    /* socket should be non-blocking */
-    if( fcntl( socket_fd, F_SETFL, O_NONBLOCK | FASYNC ) < 0 )
-        fatal_error( "Unable to put socket into Nonblocking/Async mode" );
 }
 
 Network::~Network( void )
@@ -146,4 +142,11 @@ Glib::ustring Network::getmsg( void )
 int Network::get_fd( void )
 {
     return socket_fd;
+}
+
+void Network::set_async( void )
+{
+    /* enable async mode / non-blocking */
+    if( fcntl( net->get_fd(), F_SETFL, O_NONBLOCK | FASYNC ) < 0 )
+        fatal_error( "Unable to put socket into Nonblocking/Async mode" );
 }

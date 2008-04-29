@@ -69,6 +69,8 @@ int main( int argc, char **argv )
     else
         fatal_error( "Didn't receive a head" );
 
+    net->set_async();
+
     /* auth */
     protocol->auth();
 

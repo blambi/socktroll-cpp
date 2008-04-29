@@ -31,6 +31,7 @@ public:
     int send( Glib::ustring msg );
     Glib::ustring getmsg();
     int get_fd( void );
+    void set_async( void );
 private:
     std::string host;
     uint port;
