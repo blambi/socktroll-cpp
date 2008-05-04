@@ -60,3 +60,17 @@ Glib::ustring UI::input( void )
 
     return buf;
 }
+
+bool UI::auth_dlg( void )
+{
+    /* A nicer way to auth or something ;) */
+    std::string nick;
+
+    while( ! protocol->auth( nick ) ) /* first time is not ok but well.. */
+    {
+        this->print( "*** Select your nick:" );
+        nick = this->input();
+    }
+
+    return true;
+}

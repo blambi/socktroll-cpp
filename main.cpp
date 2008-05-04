@@ -69,10 +69,9 @@ int main( int argc, char **argv )
     else
         fatal_error( "Didn't receive a head" );
 
-    net->set_async();
-
     /* auth */
-    protocol->auth();
+    ui->auth_dlg();
+    net->set_async(); /* We should not use async before after auth */
 
     /* UI input loop */
     while(1)

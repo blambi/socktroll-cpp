@@ -48,15 +48,13 @@ public:
     ~UI( void );
     void print( Glib::ustring line );
     Glib::ustring input( void );
+    bool auth_dlg( void );
 private:
     void refresh( void );
 
     WINDOW *logwin;   /* "paper trail" */
     WINDOW *inputwin; /* cmd line */
 };
-
-extern Network* net;
-extern UI* ui;
 
 /*
   Protocol handler
@@ -68,12 +66,18 @@ public:
     ~Protocol( void );
     /* do stuff with something we recived */
     void parse( std::string message );
+//    void parse_auth( std::string message );
     void msg( std::string message ); /* text message */
     void cmd( std::string command ); /* command */
-    void auth( void ); /* auth input */
+    bool auth( std::string t_nick ); /* auth input */
 private:
     std::string nick;
     bool auth_ok;
 };
+
+/* Global objects */
+extern Network* net;
+extern UI* ui;
+extern Protocol* protocol;
 
 #endif /* __SOCKTROLL_HPP */

@@ -95,7 +95,7 @@ void Protocol::msg( std::string message )
     if( auth_ok )
         net->send( std::string( "msg " ) + message );
     else
-        ui->print( "You must first auth with /nick" );
+        ui->print( "*** You must first auth with /nick" );
 }
 
 void Protocol::cmd( std::string command )
@@ -139,15 +139,15 @@ void Protocol::cmd( std::string command )
     }
 }
 
-void Protocol::auth( void )
+bool Protocol::auth( std::string t_nick )
 {
-    std::string t_nick;
+    ui->print( " D da debug of Protocol::auth! t_nick = '" + t_nick + "'" );
+    if( t_nick.empty() ) /* NEVER valid */
+        return false;
 
-    if( ! auth_ok )
-    {
-        ui->print( "*** Select your nick:" );
-        while( t_nick == "" )
-            t_nick = ui->input();
-        this->cmd( std::string( "nick " ) + t_nick );
-    } /* else its just a ghost call */
+    this->cmd( std::string( "nick " ) + t_nick );
+    this->parse( net->getmsg() );
+
+    /* write a separate auth/nick parser... */
+    return auth_ok;
 }
