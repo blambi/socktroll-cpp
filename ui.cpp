@@ -2,7 +2,6 @@
 #include <cstdio>
 #include "socktroll.hpp"
 
-
 UI::UI( void )
 {
     setlocale( LC_CTYPE, "" ); /* WHY!!! */
@@ -36,6 +35,7 @@ void UI::print( Glib::ustring line )
 
 Glib::ustring UI::input( void )
 {
+    /* Some problems when we are inputing unicode! */
     int x;
     gunichar raw_buf[500]; /* wint_t is the same as gunichar */
     Glib::ustring buf;    
@@ -76,10 +76,14 @@ bool UI::auth_dlg( void )
 
     while( ! protocol->auth( nick ) ) /* first time is not ok but well.. */
     {
+        nick = "";
         wrefresh( authwin );
 
         if( mvwgetn_wstr( authwin, 2, 1, raw_buf, 20 ) == OK )
         {
+            for( x = 1; x <= 20; x++ )
+                mvwprintw( authwin, 2, x, " " );
+
             /* make ustring from gunichar.. might write a rutine soon */
             for( x = 0; x < 20; x++ )
             {
@@ -88,11 +92,10 @@ bool UI::auth_dlg( void )
                 nick.append( 1, raw_buf[x] );
             }
         } /* e o input */
-        else
-            nick = "";
     }
 
     delwin( authwin );
+    redrawwin( logwin );
     this->refresh();
     return true;
 }
