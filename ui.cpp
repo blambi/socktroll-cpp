@@ -63,14 +63,36 @@ Glib::ustring UI::input( void )
 
 bool UI::auth_dlg( void )
 {
-    /* A nicer way to auth or something ;) */
+    /* A nicer way to auth or something ;) */   
+    WINDOW *authwin;
     std::string nick;
+    gunichar raw_buf[20];
+    int x;
+
+    authwin = newwin( 4, 22, 9, 20 );
+    wborder( authwin, 0, 0, 0, 0, 0, 0, 0, 0 ); /* use default */
+    
+    mvwprintw( authwin, 1, 1, "Your nick:" );
 
     while( ! protocol->auth( nick ) ) /* first time is not ok but well.. */
     {
-        this->print( "*** Select your nick:" );
-        nick = this->input();
+        wrefresh( authwin );
+
+        if( mvwgetn_wstr( authwin, 2, 1, raw_buf, 20 ) == OK )
+        {
+            /* make ustring from gunichar.. might write a rutine soon */
+            for( x = 0; x < 20; x++ )
+            {
+                if( raw_buf[x] == NULL )
+                    break;
+                nick.append( 1, raw_buf[x] );
+            }
+        } /* e o input */
+        else
+            nick = "";
     }
 
+    delwin( authwin );
+    this->refresh();
     return true;
 }
