@@ -42,7 +42,8 @@ Glib::ustring UI::input( void )
 
     if( mvwgetn_wstr( inputwin, 1, 0, raw_buf, 500 ) != OK )
     {
-        this->print( " [E] oh no input error" );
+        /* Will get bounces, but ignore them they arn't dangerous */
+        /* this->print( " [E] oh no input error" ); */
         return Glib::ustring("");
     }
 
